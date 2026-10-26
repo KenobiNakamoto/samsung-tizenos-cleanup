@@ -1,0 +1,16 @@
+{
+  "name": "samsung-tizenos-cleanup",
+  "version": "0.5.1",
+  "private": true,
+  "description": "Family Home launcher and documented Samsung Tizen privacy cleanup",
+  "license": "MIT",
+  "scripts": {
+    "preview": "python3 -m http.server 8080 --bind 127.0.0.1 --directory app",
+    "check": "node --check app/main.js && node --check app/device.js && node --check app/family-layout.js && python3 tools/project.py check",
+    "test": "node --test tests/launcher.test.js",
+    "build": "python3 tools/project.py build"
+  },
+  "devDependencies": {
+    "jsdom": "26.1.0"
+  }
+}

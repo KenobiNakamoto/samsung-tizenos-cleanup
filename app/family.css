@@ -1,0 +1,30 @@
+/* Hallmark · studied-DNA: CleanFrame fa537d1 · photographic TV launcher.
+ * Original source materials, fonts and component system; family grouping below. */
+@import url("tokens.css");
+.family-dock .tile{top:16px;transition:transform 180ms var(--ease)}
+.family-dock .tile .mark{left:50%;top:34px;margin-left:-60px}
+.family-dock .tile .label{top:128px;font-size:30px;line-height:42px;left:8px;right:8px;letter-spacing:-.7px}
+.family-dock .tile.is-compact{border-radius:20px}
+.family-dock .tile.is-compact .mark{top:13px;margin-left:-33px}
+.family-dock .tile.is-compact .label{top:60px;left:2px;right:2px;font-size:17px;line-height:24px;letter-spacing:-.3px}
+.family-dock .tile.is-unavailable .mark,.family-dock .tile.is-unavailable .label{opacity:.42}
+.family-dock .family-apps>.ico{position:absolute;width:52px;height:52px;left:74px;top:43px;opacity:.84}
+.family-dock .family-add>.ico{position:absolute;width:36px;height:36px;left:14px;top:82px;opacity:.84}
+.family-dock .tile.is-focus>.ico{opacity:1}
+.family-dock .tile.is-focus{outline:2px solid var(--family-focus);outline-offset:-2px}
+.family-dock .plate{top:16px!important;transition:transform 180ms var(--ease),opacity 140ms linear}
+.family-dock .tile.is-outside-icon{opacity:1;pointer-events:auto}
+.a-icons .family-dock .tile .mark{top:64px}
+.a-icons .family-dock .tile.is-compact .mark{top:28px}
+.a-text .family-dock .tile .label{top:78px;font-size:30px}
+.a-text .family-dock .tile.is-compact .label{top:30px;font-size:18px;white-space:normal;line-height:24px}
+.er-size{flex:none;width:124px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--mute);visibility:hidden}
+.er.is-active .er-size{visibility:visible}
+.er-size.is-focus{background:var(--solid);color:var(--solid-ink)}
+.er.is-lifted .er-size{visibility:hidden}
+.er-rm{width:132px;font-size:24px}
+.er-name{font-size:30px}
+.er-name .panel-content{gap:12px}
+@media(prefers-reduced-motion:reduce){.family-dock .tile,.family-dock .plate{transition:opacity 100ms linear!important}.family-dock .tile.is-focus .mark{transform:none}}
+.family-apps,.family-add{background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.ed-home{overflow:hidden}
