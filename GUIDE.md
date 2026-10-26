@@ -83,7 +83,25 @@ Use Samsung/Tizen’s official downloads and documentation:
 - [Samsung TV certificate profile](https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/creating-certificates.html)
 - [Tizen command-line interface](https://docs.tizen.org/application/web/get-started/cli/)
 
-Install Tizen Studio, the Samsung TV extension/web tools and the Samsung Certificate Extension through Package Manager. The working installation used Certificate Extension 2.0.75. An SDK installer completing does not mean its optional TV/signing extensions are installed; check Package Manager’s installed-package view.
+Install Tizen Studio, the Samsung TV extension/web tools and the Samsung Certificate Extension through Package Manager. An SDK installer completing does not mean its optional TV/signing extensions are installed; check Package Manager’s installed-package view.
+
+### The exact certificate-software setup we used on the Mac
+
+These were Samsung’s official development/signing tools, not a custom certificate authority or the earlier general-purpose certificate setup. A friend should create their own Samsung profile through this workflow.
+
+1. Download the **Tizen SDK 10.0 web IDE for macOS** from the official [SDK installer directory](https://download.tizen.org/sdk/Installer/tizen-sdk_10.0/). Our recorded filename was `web-ide_Tizen_SDK_10.0_macos-64.dmg`. Choose the supported installer for your own host; this filename records our installation, not a promise of compatibility with every Mac.
+2. Open the downloaded disk image in **Finder**, then double-click **installer**. In our session, automation did not expose the setup window; the owner opened it manually and saw the installer/license screen.
+3. Review the license and complete the installer. Record the SDK location you choose; examples below use `$HOME/tizen-studio`. Installing this software changes the computer, not the TV firmware.
+4. Open **Tizen Studio Package Manager**. The first screen can be **Main SDK**, showing platform versions such as 9.0 and 8.0. Seeing that screen does not mean Samsung’s certificate tools are installed. At our first check the base SDK was installed, but Samsung Certificate Extension and the full Certificate Manager product were missing.
+5. Close other Tizen IDE/tool windows if Package Manager requests it. Open the **Extension SDK** tab and install **TV Extensions**, including the web-app development tools, and **Samsung Certificate Extension**. Allow downloads and installation to finish; use the Progress view, then the installed-package view to check completion. Review the component licenses.
+6. Our successful manifest contained **TV Extensions 10.0.0**, **Samsung Certificate Extension 2.0.75** and **Certificate Manager product 1.3.11**. These are historical working versions, not an instruction to downgrade a newer supported installation. The earlier official guidance we reviewed required Certificate Extension 2.0.73 or newer; use the current supported Samsung extension rather than an old bundled certificate plugin.
+7. Open **Tools → Certificate Manager**, or launch the installed Certificate Manager application. An empty profile list at this point is normal: installing the certificate software does not create your certificates.
+8. Follow the [profile-creation steps below](#create-your-own-samsung-tv-signing-profile). Complete both author and distributor steps, click **Finish**, and verify that the profile appears in Certificate Manager with both certificates and their validity dates. Our original profile label was `FamilyHomeTV`; the friend-facing examples use `MyFamilyTV`.
+9. Use that same profile label in the SDK signing command. Keep its author identity for updates and protect its private backup. No signing password, certificate private key or household device identifier is included in this guide or repository.
+
+The package count grew from 83 to 131 during our setup. That was corroborating evidence for our install, not a required count for a friend’s different SDK release. We did not need to reboot the TV merely to install the SDK or issue the certificates. TV restart checkpoints are listed separately below.
+
+During our original signing attempt, the automation environment could not write some SDK configuration/log files. The owner then ran the prepared signing command in Terminal successfully. If an automation tool has the same problem, check its access to the selected SDK/data directories or run the reviewed command in your own Terminal; changing the TV’s firmware or recreating a valid certificate is not the remedy. Actual TV installation and launch are later, separate commands.
 
 Use the official `sdb` from your SDK. Do not replace a working SDK binary with an unexplained third-party download.
 
@@ -144,8 +162,9 @@ Preview at a 1920×1080 viewport for the intended TV geometry. Use arrow keys, E
 1. Open Certificate Manager, choose **+ → Samsung → TV**, and create a profile, for example `MyFamilyTV`.
 2. Create your own author certificate and keep its password private. Complete Samsung account authentication in the wizard.
 3. Create a distributor certificate and add **your television’s DUID**, normally from the connected-device list. A DUID is not an IP address.
-4. Finish the wizard and confirm the profile exists. Keep encrypted/private backups of the author certificate, distributor certificate and profile outside the source repository.
-5. If Device Manager offers **Permit to install applications**, follow Samsung’s workflow for that connected TV when required.
+4. At the “distributor certificate is complete” screen, click **Finish**. In Certificate Manager, verify the profile is listed, both **Author Certificate** and **Distributor Certificate** are present, their validity dates are current, and the intended profile is selected. These were two separate completion screens in our session.
+5. Keep encrypted/private backups of the author certificate, distributor certificate and profile outside the source repository. The original certificate wizard saved them under a `SamsungCertificate/PROFILE_NAME` directory in the owner’s home folder; record the actual destination displayed on your machine rather than assuming a fixed path.
+6. If Device Manager offers **Permit to install applications**, follow Samsung’s workflow for that connected TV when required. This is a conditional vendor step, not an action we separately verified as necessary on our TV.
 
 The author identity must remain consistent when updating an app. Our household’s certificate is not included. A general-purpose document-signing certificate is not a substitute for Samsung’s TV author/distributor chain. Do not put certificate passwords in command history or the journal; let the SDK prompt or use its configured credential store.
 
@@ -558,6 +577,47 @@ These are **app records**, not 82 independent spyware products. Multiple records
 Do not use a wildcard such as `com.samsung.*` or `*voice*` as a deletion list. The reviewed selection retained accessibility, tuner/HDMI, networking, DRM, security, audio and panel care. Those functions can share runtimes and dependencies with optional features.
 
 ## 11. Verify after a real power cycle
+
+### Restart checkpoints: when to turn the TV off or keep it on
+
+| Stage | TV power action | What to confirm before continuing |
+| --- | --- | --- |
+| Enable Developer Mode or change the developer-host IP | Perform the TV’s requested restart | Developer Mode remains on, host IP is correct, and SDB reports `device` |
+| Install computer SDK/extensions or create certificates | No TV power cycle is needed for the computer installation itself; keep the TV reachable if the wizard needs its DUID | Installed extensions and completed signing profile |
+| Root acquisition, inventory, backup, cleanup, app installation or native Home change | **Keep the TV on until the current operation and its cleanup finish** | Complete result and staging cleanup; do not interrupt a root session by unplugging |
+| After a cleanup batch has finished and been audited | Unplug power for at least 30 seconds, reconnect, turn on, wait about one minute | A changed kernel boot ID, then a new audit and normal family functions |
+| After setting native Home/startup | Test Home immediately from a streaming app; separately test a full cold start | Physical Home and startup both behave as intended; retain original Home recovery |
+| TV has been “off” overnight or turned on again | Do not assume a full reboot occurred | Compare boot ID; standby can retain the same boot and running processes |
+| Extended cleanup using the seven runtime masks | Record the state before a full reboot and audit afterward | Expect those masks to disappear; do not repeat the old full apply transaction |
+
+A longer unplug is not required just because ours lasted roughly **30 minutes**. That was what the owner actually did during the successful core-batch test; the recipe requested at least 30 seconds. A factory reset, Smart Hub reset, remote Power press, computer SDB-server restart and physical TV power disconnect are different operations.
+
+### Our actual sequence and what each step proved
+
+Dates below are based on saved evidence and owner reports. Times shown are **UTC**, not the TV/owner’s displayed local clock. A check timestamp is not necessarily the exact moment the owner clicked a button or removed the power cable; we do not have a complete timestamped record of every physical button press.
+
+| Date/checkpoint | What happened | What was established |
+| --- | --- | --- |
+| 24 October 2026: Developer Mode setup | Owner enabled the development setup and reported holding Power for about two seconds and seeing a new boot-like display | That report alone did not prove a full cold boot; subsequent connection tests established SDB access |
+| 24 October: SDB recovery | Early official-SDB connection attempts failed; a later attempt returned `device` and developer capabilities | Developer transport worked even though retail shell/root flags remained disabled |
+| 24 October: temporary root and inventory | Authenticated temporary archive-root access and inventories succeeded; some larger reads required follow-up batches | Root was usable for this build, with per-session cleanup and original-file checks |
+| 24 October: first cleanup attempt and continuation | Backup was verified; an unsigned-script execution failure occurred, then the existing batch was continued through the reviewed shell transport | Selected configuration changed; failed/remaining-process findings still required audit, so no new blanket apply was justified |
+| Overnight 24–25 October; morning audit | Owner said the TV had been off overnight; the recorded boot ID was unchanged and six selected processes remained | The overnight off period was not a verified kernel restart |
+| 25 October: explicit physical disconnect | Owner reported unplugging the power cable for roughly 30 minutes, reconnecting, turning on and waiting about a minute | A later verification could test a genuine new boot rather than assumed standby behavior |
+| 25 October, verification completed about 11:18 UTC | New boot ID; 38 selected app records disabled; four voice preferences off; nine markers; ten units inactive; zero selected processes in both samples | The **core** cleanup passed cold-boot verification |
+| 25 October: owner’s functional check | Owner confirmed that picture, sound, remote, Live TV and their usual streaming apps worked | Daily functions were checked after the core cleanup, not inferred from process counts |
+| 25 October, 11:39 UTC setup check | Owner had manually completed the Mac SDK installer; base SDK 10.0 was present, certificate extension/manager still absent | The main installer alone was not sufficient for signing |
+| 25 October, 11:52 UTC extension check | TV Extensions 10.0.0, Samsung Certificate Extension 2.0.75 and Certificate Manager 1.3.11 were present | Signing software was installed; certificate creation still had to be completed |
+| 25 October: certificate wizard | Owner created the Samsung TV profile, completed author/distributor issuance, clicked through completion and showed the populated profile | Our own Samsung-issued signing profile existed; no unrelated certificate provider was used |
+| 25 October, signing run beginning 12:13 UTC | Owner ran the local signing command in Terminal | Signed package and matching contents/profile certificates were recorded; independent cryptographic verification was a separate subsequent check |
+| 25 October: offline signature checks | Both XML signatures and referenced app contents were checked; tampered payload/signature tests were rejected | Signing validation went beyond finding two XML files in a ZIP |
+| 25 October, install run beginning 12:26 UTC | SDK installed and launched Family Home 0.3.0; owner confirmed its screen on the TV | App installation worked; physical Home still used Samsung Home at that stage |
+| Later 25 October | Family app/layout updates, CleanFrame-based 0.5.x UI, launcher rollback testing and native Home apply/restore/reapply were performed; owner confirmed Home from a stream opens Family Home | Physical Home routing worked, independently of a new cold-boot test |
+| Later 25 October: extended cleanup | 44 additional records and related controls were changed; Gaming Hub respawn persisted and seven masks were only runtime-scoped | This batch was **not** equivalent to the already verified core batch |
+| 26 October: owner turned TV on and live audit ran | Current device address was reidentified; 82 target records stayed disabled, but boot ID was still unchanged and one Gaming Hub process remained | Another reported power-on was not proof of a new kernel boot; extended cold-boot durability remained unverified |
+| 26 October: requested follow-up power cycle | Owner was asked to unplug/reconnect and confirm the TV was back on | This follow-up is **pending at the guide’s evidence cutoff**, not a completed action |
+
+This is a sanitized implementation sequence, not the private command-by-command journal. It preserves the important setup/restart decisions while omitting household identifiers, credentials and raw operational backups.
 
 A successful command is not the same as a successful cleanup. Record these checks for the same TV and run:
 

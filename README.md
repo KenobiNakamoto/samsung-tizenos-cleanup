@@ -2,7 +2,7 @@
 
 A calmer Samsung TV: fewer unwanted background features, a family-focused home screen, and documented ways to undo the changes.
 
-**[Read the complete guide →](GUIDE.md)** — setup, temporary root, every reviewed repository, the 82-record reference selection, backups, Home-button routing and recovery.
+**[Read the complete guide →](GUIDE.md)** — the exact Mac SDK/certificate setup, restart checkpoints and dated implementation sequence, temporary root, every reviewed repository, the 82-record reference selection, backups, Home-button routing and recovery.
 
 This project combines a real [CleanFrame](https://github.com/nthnclrk/CleanFrame) adaptation with the lessons from cleaning a Samsung S85D. It keeps Tizen underneath. It is not a replacement firmware, a permanent-root installer or a universal debloat button.
 
